@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
 export function login(data) {
+  console.info(data)
   return request({
-    url: '/user/login',
+    url: '/users/login',
     method: 'post',
     data
   })

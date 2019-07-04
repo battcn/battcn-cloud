@@ -17,15 +17,13 @@ const systemRouter = {
       component: () => import('@/views/system/user/index'),
       name: 'UserManager',
       meta: { title: '用户管理' }
-    }
-    ,
+    },
     {
       path: 'role-table',
       component: () => import('@/views/system/role/index'),
       name: 'RoleManager',
       meta: { title: '角色管理' }
     }
-    //,
     // {
     //   path: 'log-table',
     //   component: () => import('@/views/system/log/index'),
