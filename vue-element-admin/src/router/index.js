@@ -9,6 +9,7 @@ import Layout from '@/layout'
 /* Router Modules */
 import tableRouter from './modules/table'
 import systemRouter from './modules/system'
+import companyRouter from './modules/company'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -102,6 +103,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  companyRouter,
   systemRouter,
   {
     path: '/permission',

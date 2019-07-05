@@ -1,9 +1,8 @@
 import request from '@/utils/request'
 
 export function login(data) {
-  console.info(data)
   return request({
-    url: '/users/login',
+    url: '/login',
     method: 'post',
     data
   })
@@ -11,7 +10,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/users/info',
+    url: '/users/'+token,
     method: 'get',
     params: { token }
   })
@@ -19,7 +18,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/users/logout',
+    url: '/logout',
     method: 'post'
   })
 }

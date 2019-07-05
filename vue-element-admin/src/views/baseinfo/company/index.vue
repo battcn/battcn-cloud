@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.username" placeholder="请输入用户名" clearable style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.title" placeholder="公司名" clearable style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item.id" :label="item.value" :value="item.value" />
       </el-select>
@@ -37,64 +37,68 @@
       type="selection"
       width="55">
     </el-table-column>
-      <el-table-column label="用户名" width="130px" >
-        <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="姓名" width="130px" align="center">
+      <el-table-column label="公司名" min-width="80px">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.name }}</span> -->
           <el-popover trigger="hover" placement="top">
           <p>姓名: {{ scope.row.name }}</p>
-          <p>住址: {{ scope.row.desc }}</p>
+          <p>手机: {{ scope.row.phone }}</p>
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+            <el-tag size="medium">{{ scope.row.title }}</el-tag>
           </div>
         </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="注册时间" width="160px" align="center">
+      <el-table-column label="邀请码" align="center" width="80">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.inviteCode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="安全等级" width="120px">
+      <el-table-column label="安全等级"  sortable="custom" prop="level" width="120px">
         <template slot-scope="scope">
           <svg-icon v-for="n in +scope.row.level" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
-      <el-table-column label="年龄" align="center" width="95">
+      <el-table-column label="注册时间" sortable="custom" prop="createTime"  align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.age }}</span>
+          <i class="el-icon-time"></i>
+          <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" width="100">
+      <el-table-column label="免审" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            <span v-if="row.status == 1">发布</span>
-            <span v-else-if="row.status == 2">草稿</span>
-            <span v-else>删除</span>
-          </el-tag>
+          <el-switch
+            v-model="row.approval"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="座右铭" min-width="130px" align="center">
+
+      <el-table-column label="状态"  width="100" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.locked" style="color:#ff4949">禁用</span>
+          <span v-else style="color:#13ce66">启用</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="地址" min-width="100px" >
         <template slot-scope="scope">
-          <span>{{ scope.row.desc }}</span>
+          <span>{{ scope.row.address }}</span>
         </template>
       </el-table-column>
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.status!='1'" size="mini" type="success" @click="handleModifyStatus(row,'1')">
+          <!-- <el-button v-if="row.status!='1'" size="mini" type="success" @click="handleModifyStatus(row,'1')">
             发布
           </el-button>
           <el-button v-if="row.status!='2'" size="mini" @click="handleModifyStatus(row,'2')">
             草稿
-          </el-button>
+          </el-button> -->
           <el-button v-if="row.status!='0'" size="mini" type="danger" @click="handleModifyStatus(row,'0')">
             删除
           </el-button>
@@ -149,8 +153,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
-import { fetchSystemUser,createSystemUser,updateSystemUser,deleteSystemUser} from '@/api/system/user'
+import { fetchCompanyByParams,createCompany,updateCompany,deleteCompanyById} from '@/api/baseinfo/company'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -197,7 +200,8 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: undefined,
+        order:'id asc'
       },
       importanceOptions: [{ id: 1, value: '发布' }, { id: 2, value: '草稿' },{ id: 0, value: '删除' }],
       calendarTypeOptions,
@@ -236,9 +240,9 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchSystemUser(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchCompanyByParams(this.listQuery).then(response => {
+        this.list = response.data
+        this.total = response.total
         this.listLoading = false
       })
     },
@@ -258,15 +262,13 @@ export default {
       },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      if (prop ===  undefined || prop === '') {
+        return
       }
-    },
-    sortByID(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+id'
+        this.listQuery.order = prop + ' asc'
       } else {
-        this.listQuery.sort = '-id'
+        this.listQuery.order = prop + ' desc'
       }
       this.handleFilter()
     },
