@@ -1,12 +1,24 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="公司名" clearable style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input
+        v-model="listQuery.title"
+        placeholder="公司名"
+        clearable
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
       <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item.id" :label="item.value" :value="item.value" />
       </el-select>
       <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 150px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+        <el-option
+          v-for="item in calendarTypeOptions"
+          :key="item.key"
+          :label="item.display_name+'('+item.key+')'"
+          :value="item.key"
+        />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 180px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
@@ -14,15 +26,27 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
         添加
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-remove" @click="handleDelete">
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="danger"
+        icon="el-icon-remove"
+        @click="handleDelete"
+      >
         删除
       </el-button>
     </div>
 
-   <el-table
+    <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -32,21 +56,21 @@
       style="width: 100%;"
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
-    > 
-    <el-table-column
-      type="selection"
-      width="55">
-    </el-table-column>
+    >
+      <el-table-column
+        type="selection"
+        width="55"
+      />
       <el-table-column label="公司名" min-width="80px">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.name }}</span> -->
           <el-popover trigger="hover" placement="top">
-          <p>姓名: {{ scope.row.name }}</p>
-          <p>手机: {{ scope.row.phone }}</p>
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.title }}</el-tag>
-          </div>
-        </el-popover>
+            <p>姓名: {{ scope.row.name }}</p>
+            <p>手机: {{ scope.row.phone }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{ scope.row.title }}</el-tag>
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="邀请码" align="center" width="80">
@@ -54,14 +78,14 @@
           <span>{{ scope.row.inviteCode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="安全等级"  sortable="custom" prop="level" width="120px">
+      <el-table-column label="安全等级" sortable="custom" prop="level" width="120px">
         <template slot-scope="scope">
           <svg-icon v-for="n in +scope.row.level" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
-      <el-table-column label="注册时间" sortable="custom" prop="createTime"  align="center">
+      <el-table-column label="注册时间" sortable="custom" prop="createTime" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
+          <i class="el-icon-time" />
           <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
@@ -70,19 +94,19 @@
           <el-switch
             v-model="row.approval"
             active-color="#13ce66"
-            inactive-color="#ff4949">
-          </el-switch>
+            inactive-color="#ff4949"
+          />
         </template>
       </el-table-column>
 
-      <el-table-column label="状态"  width="100" align="center">
+      <el-table-column label="状态" width="100" align="center">
         <template slot-scope="{row}">
           <span v-if="row.locked" style="color:#ff4949">禁用</span>
           <span v-else style="color:#13ce66">启用</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="地址" min-width="100px" >
+      <el-table-column label="地址" min-width="100px">
         <template slot-scope="scope">
           <span>{{ scope.row.address }}</span>
         </template>
@@ -106,11 +130,24 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
     <!-- 添加和编辑表单页 -->
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="70px"
+        style="width: 400px; margin-left:50px;"
+      >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
@@ -152,10 +189,10 @@
 </template>
 
 <script>
-import { fetchCompanyByParams,createCompany,updateCompany,deleteCompanyById} from '@/api/baseinfo/company'
-import waves from '@/directive/waves' // waves directive
+import { fetchCompanyByParams, createCompany, updateCompany, deleteCompanyById } from '@/api/baseinfo/company'
+import waves from '@/directive/waves'
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -200,12 +237,12 @@ export default {
         title: undefined,
         type: undefined,
         sort: undefined,
-        order:'id asc'
+        order: 'id asc'
       },
-      importanceOptions: [{ id: 1, value: '发布' }, { id: 2, value: '草稿' },{ id: 0, value: '删除' }],
+      importanceOptions: [{ id: 1, value: '发布' }, { id: 2, value: '草稿' }, { id: 0, value: '删除' }],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: [{ id: 1, value: '发布' }, { id: 2, value: '草稿' },{ id: 0, value: '删除' }],
+      statusOptions: [{ id: 1, value: '发布' }, { id: 2, value: '草稿' }, { id: 0, value: '删除' }],
       showReviewer: false,
       temp: {
         id: undefined,
@@ -257,11 +294,11 @@ export default {
       row.status = status
     },
     handleSelectionChange(val) {
-         this.multipleSelection = val;
-      },
+      this.multipleSelection = val
+    },
     sortChange(data) {
       const { prop, order } = data
-      if (prop ===  undefined || prop === '') {
+      if (prop === undefined || prop === '') {
         return
       }
       if (order === 'ascending') {
@@ -293,9 +330,9 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.temp.id = parseInt(Math.random() * 100) + 1024
           this.temp.author = 'vue-element-admin'
-          createSystemUser(this.temp).then(() => {
+          createCompany(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -322,7 +359,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateSystemUser(tempData).then(() => {
+          updateCompany(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
@@ -342,25 +379,19 @@ export default {
       })
     },
     handleDelete() {
-      for(const row of this.multipleSelection){
-        deleteSystemUser(row.id).then(()=>{
+      for (const row of this.multipleSelection) {
+        deleteCompanyById(row.id).then(() => {
           this.$notify({
             title: 'Success',
             message: '删除成功',
             type: 'success',
             duration: 2000
           })
-          //const index = this.list.indexOf(row)
-          //this.list.splice(index, 1)
-          this.handleModifyStatus(row,"0")
+          // const index = this.list.indexOf(row)
+          // this.list.splice(index, 1)
+          this.handleModifyStatus(row, '0')
         })
       }
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
