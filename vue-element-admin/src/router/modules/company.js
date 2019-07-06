@@ -19,10 +19,10 @@ const companyRouter = {
       meta: { title: '公司管理' }
     },
     {
-      path: 'role-table',
-      component: () => import('@/views/system/role/index'),
-      name: 'RoleManager',
-      meta: { title: '角色管理' }
+      path: 'dept-staff-table',
+      component: () => import('@/views/baseinfo/company/staff'),
+      name: 'DeptAndStaffManager',
+      meta: { title: '组织员工管理' }
     }
     // {
     //   path: 'log-table',
