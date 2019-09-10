@@ -784,9 +784,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.showCount)
-    this.logoImg = location.origin.indexOf('56.ksudi.com') > -1
-    this.getErweima()
   },
   beforeDestroy() {
     this.timer2 = null
@@ -825,28 +822,6 @@ export default {
           })
         }
       }
-    },
-    getErweima() {
-      const param = {
-        sceneStr: new Date().getTime()
-      }
-      const that = this
-      this.$api.getLoginErweima(param).then(res => {
-        this.url = `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${res.data.data}`
-        this.ticket = res.data.data
-        this.initWebSocket()
-      })
-      this.timer2 = setInterval(function() {
-        const param = {
-          sceneStr: new Date().getTime()
-        }
-        console.log('我调了一次')
-        that.$api.getLoginErweima(param).then(res => {
-          that.url = `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${res.data.data}`
-          that.ticket = res.data.data
-          that.initWebSocket()
-        })
-      }, 120000)
     },
     getResetCode() {
       const value = this.registerForm.mobile
