@@ -15,7 +15,7 @@ export default {
     },
     text: {
       type: String,
-      default: 'vue-element-admin'
+      default: '西镜科技 | 您身边的合作伙伴'
     }
   }
 }
