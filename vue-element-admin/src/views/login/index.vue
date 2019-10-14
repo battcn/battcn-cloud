@@ -6,24 +6,21 @@
     >
       <div class="tabs">
         <div
-          :class="{'active' : mode === 1}"
+          :class="{'active' : mode === 2}"
           class="tabs_staff"
-          @click="mode = 1"
+          @click="mode = 2"
         >
-          <i :class="{'staff-active' : mode === 1}" /><span>西镜</span>
+          <i :class="{'staff-active' : mode === 2}" /><span>中科云上</span>
         </div>
       </div>
 
       <div
-        v-if="mode === 1"
+        v-if="mode === 2"
         class="tabs_content"
       >
         <div class="tabs_content-left">
           <div class="type">
-            <span
-              :class="{active: type === 2}"
-              @click="type = 2"
-            >登录</span>
+            <span class="active">手机号登录</span>
           </div>
           <div
             v-if="type === 2"
@@ -54,13 +51,15 @@
                 </el-input>
               </el-form-item>
               <p>
-                <span @click="mode = 3; isRegister = false; from = 'staff'">忘记密码？</span>
+                <span @click="mode = 3; isRegister = false; from = 'admin'">忘记密码？</span>
+                <span @click="mode = 3; isRegister = true">注册账号></span>
               </p>
               <el-form-item>
                 <el-button
                   :loading="loading"
                   @click.native.prevent="handleLogin"
-                >登录</el-button>
+                >登录
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -90,7 +89,7 @@
     >
       <div
         class="back"
-        @click="mode = 1"
+        @click="mode = 2"
       >
         <i class="icon-back" />
         返回登录
@@ -117,17 +116,6 @@
             <el-input
               v-model="registerForm.name"
               placeholder="请输入公司名称"
-            >
-              <template slot="prepend"><i class="icon icon-company" /></template>
-            </el-input>
-          </el-form-item>
-          <el-form-item
-            v-if="isRegister"
-            prop="shortName"
-          >
-            <el-input
-              v-model="registerForm.shortName"
-              placeholder="请输入公司简称"
             >
               <template slot="prepend"><i class="icon icon-company" /></template>
             </el-input>
@@ -180,7 +168,7 @@
           >
             <el-input
               v-model="registerForm.validCode"
-              placeholder="请输入短信验证码123"
+              placeholder="请输入短信验证码"
               auto-complete="off"
               readonly
               onfocus="this.removeAttribute('readonly');"
@@ -191,7 +179,8 @@
             <el-button
               class="get-code"
               @click="getCode"
-            >{{ showCount ? `${count}S后重新获取` : '获取验证码' }}</el-button>
+            >{{ showCount ? `${count}S后重新获取` : '获取验证码' }}
+            </el-button>
           </el-form-item>
           <el-form-item
             v-if="!isRegister"
@@ -211,7 +200,8 @@
             <el-button
               class="get-code"
               @click="getResetCode"
-            >{{ showCountReset ? `${countReset}S后重新获取` : '获取验证码' }}</el-button>
+            >{{ showCountReset ? `${countReset}S后重新获取` : '获取验证码' }}
+            </el-button>
           </el-form-item>
           <el-form-item
             v-if="isRegister"
@@ -225,6 +215,17 @@
               readonly
               onfocus="this.removeAttribute('readonly');"
               onblur="this.setAttribute('readonly',true);"
+            >
+              <template slot="prepend"><i class="icon icon-password" /></template>
+            </el-input>
+          </el-form-item>
+          <el-form-item
+            v-if="isRegister"
+            prop="invitationCode"
+          >
+            <el-input
+              v-model="registerForm.invitationCode"
+              placeholder="请输入您的邀请码"
             >
               <template slot="prepend"><i class="icon icon-password" /></template>
             </el-input>
@@ -265,7 +266,8 @@
             v-if="isRegister"
             class="check"
           >
-            <el-checkbox v-model="checked">我已阅读并接受 <router-link to="expressServiceProtocol">《全国快递服务协议》</router-link>
+            <el-checkbox v-model="checked">我已阅读并接受
+              <router-link to="expressServiceProtocol">《中科云上广告主服务协议》</router-link>
             </el-checkbox>
           </p>
           <el-form-item>
@@ -273,13 +275,15 @@
               v-if="!isRegister"
               class="submit"
               @click.native.prevent="handleReset"
-            >确定</el-button>
+            >确定
+            </el-button>
             <el-button
               v-if="isRegister"
               :class="{'mg-submit': isRegister}"
               class="submit"
               @click.native.prevent="handleRegister"
-            >注册</el-button>
+            >注册
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -325,6 +329,7 @@
         font-family: PingFangSC-Semibold;
         background: url('../../assets/bg-left.png') no-repeat;
         cursor: pointer;
+
         > div {
           width: 180px;
           height: 80px;
@@ -335,6 +340,7 @@
           justify-content: flex-start;
           align-items: center;
           margin: 5px 0;
+
           i {
             display: inline-block;
             width: 18px;
@@ -343,24 +349,29 @@
             vertical-align: middle;
           }
         }
+
         .active {
           color: #0066ff;
           background-color: #fff;
         }
+
         .staff-active {
           background: url('../../assets/staff_select.png') no-repeat;
           background-size: 100%;
         }
+
         .admin-active {
           background: url('../../assets/admin_select.png') no-repeat;
           background-size: 100%;
         }
+
         &_staff {
           i {
             background: url('../../assets/staff.png') no-repeat;
             background-size: 100%;
           }
         }
+
         &_admin {
           i {
             background: url('../../assets/admin.png') no-repeat;
@@ -371,9 +382,11 @@
 
       .tabs_content {
         display: flex;
+
         .tabs_content-left {
           width: 672px;
           padding: 46px 100px 0;
+
           .content_title-left {
             text-align: center;
             font-size: 28px;
@@ -381,9 +394,11 @@
             font-weight: 700;
             margin: 4px 0 68px 0;
           }
+
           .type {
             width: 100%;
             display: flex;
+
             > span {
               display: inline-block;
               flex: 1;
@@ -394,15 +409,18 @@
               color: #666;
               border-bottom: 2px solid #ddd;
             }
+
             .active {
               color: #1776f6;
               border-bottom: 2px solid #1776f6;
             }
           }
+
           .content-erweima {
             display: flex;
             flex-direction: column;
             align-items: center;
+
             p {
               margin: 60px 0 25px;
             }
@@ -412,18 +430,22 @@
               height: 200px;
             }
           }
+
           .content-phone {
             .el-form {
               width: 100%;
             }
+
             .el-input {
               width: 100%;
               height: 52px;
+
               input {
                 height: 52px;
                 line-height: 52px;
               }
             }
+
             .el-form-item {
               margin: 60px 0 0 0;
             }
@@ -437,6 +459,7 @@
               display: flex;
               justify-content: space-between;
               margin: 20px 0 60px;
+
               span {
                 font-size: 16px;
                 color: #1776f6;
@@ -454,6 +477,7 @@
             }
           }
         }
+
         .tabs_content-right {
           width: 220px;
           padding: 0 25px;
@@ -461,6 +485,7 @@
           box-sizing: border-box;
           border-left: 1px solid #d8d8d8;
           font-size: 14px;
+
           p {
             line-height: 20px;
             margin: 0 0 20px 0;
@@ -502,6 +527,7 @@
       background-color: #fff;
       border-radius: 4px;
       padding: 0 230px;
+
       .back {
         position: absolute;
         left: 30px;
@@ -509,48 +535,59 @@
         color: #1776f6;
         cursor: pointer;
       }
+
       .input-reset {
         .el-input {
           width: 327px !important;
         }
       }
+
       .content-phone {
         p {
           display: flex;
           justify-content: space-between;
           margin: 30px 0 30px;
+
           span {
             font-size: 16px;
             color: #1776f6;
             cursor: pointer;
           }
         }
+
         .title {
           width: 100%;
           font-size: 28px;
           line-height: 50px;
           justify-content: center;
         }
+
         .mg-title {
           margin: 30px 0 0 0;
         }
+
         .check {
           margin: 20px 0;
+
           span {
             font-size: 14px;
           }
         }
+
         .el-form {
           width: 100%;
         }
+
         .el-input {
           width: 100%;
           height: 52px;
+
           input {
             height: 52px;
             line-height: 52px;
           }
         }
+
         .el-form-item {
           margin: 20px 0 0 0;
         }
@@ -594,6 +631,7 @@
       background: url('../../assets/phone.png') no-repeat;
       background-size: 100%;
     }
+
     .icon-address {
       display: inline-block;
       width: 13px;
@@ -601,6 +639,7 @@
       background: url('../../assets/address.png') no-repeat;
       background-size: 100%;
     }
+
     .icon-password {
       display: inline-block;
       width: 13px;
@@ -608,6 +647,7 @@
       background: url('../../assets/password.png') no-repeat;
       background-size: 100%;
     }
+
     .icon-company {
       display: inline-block;
       width: 13px;
@@ -615,6 +655,7 @@
       background: url('../../assets/company.png') no-repeat;
       background-size: 100%;
     }
+
     .icon-check {
       display: inline-block;
       width: 13px;
@@ -622,6 +663,7 @@
       background: url('../../assets/check.png') no-repeat;
       background-size: 100%;
     }
+
     .icon-back {
       display: inline-block;
       width: 14px;
@@ -702,8 +744,8 @@ export default {
       },
       registerRules: {
         name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
-        shortName: [
-          { required: false, message: '请输入公司简称', trigger: 'blur' }
+        invitationCode: [
+          { required: false, message: '请输入您的邀请码', trigger: 'blur' }
         ],
         mobile: [{ required: true, validator: validatePhone, trigger: 'blur' }],
         code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
@@ -732,7 +774,7 @@ export default {
       count: 59,
       showCountReset: false,
       countReset: 59,
-      mode: 1,
+      mode: 2,
       type: 2,
       isRegister: true,
       input2: '',
@@ -774,8 +816,8 @@ export default {
         this.$refs.registerForm && this.$refs.registerForm.clearValidate()
         this.registerForm = {}
         this.$refs.loginForm &&
-                    this.$refs.loginForm.password &&
-                    this.$refs.loginForm.password.clearValidate()
+              this.$refs.loginForm.password &&
+              this.$refs.loginForm.password.clearValidate()
         this.loginForm.password = ''
         if (this.$refs.loginForm) {
           this.$refs.loginForm.clearValidate()
@@ -784,6 +826,8 @@ export default {
     }
   },
   mounted() {
+    console.log(this.showCount)
+    this.logoImg = location.origin.indexOf('56.ksudi.com') > -1
   },
   beforeDestroy() {
     this.timer2 = null
@@ -916,7 +960,7 @@ export default {
         })
       } else {
         this.$message.error({
-          message: '请勾选全国快递服务协议',
+          message: '请勾选中科云上广告主服务协议',
           duration: 2000
         })
       }

@@ -16,8 +16,14 @@ import router from './router'
 import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
+import api from '@/api/index'
+
+import '@/utils/filters'
+import '@/icons' // icon
+import '@/permission' // permission control
 
 import * as filters from './filters' // global filters
+Vue.prototype.$api = api
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
